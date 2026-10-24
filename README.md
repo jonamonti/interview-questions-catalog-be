@@ -54,17 +54,18 @@ Prisma generates its client into `src/generated/prisma` on `npm install`
 
 ## Scripts
 
-| Command               | What it does                               |
-| --------------------- | ------------------------------------------ |
-| `npm run dev`         | Start with auto-reload                     |
-| `npm run build`       | Compile TypeScript to `dist/`              |
-| `npm start`           | Run the compiled build (run `build` first) |
-| `npm run typecheck`   | Type-check without emitting files          |
-| `npm run lint`        | Lint with ESLint                           |
-| `npm run format`      | Format with Prettier                       |
-| `npm run db:up`       | Start local Postgres (Docker)              |
-| `npm run db:down`     | Stop local Postgres                        |
-| `npm run db:generate` | Regenerate the Prisma client               |
+| Command                | What it does                               |
+| ---------------------- | ------------------------------------------ |
+| `npm run dev`          | Start with auto-reload                     |
+| `npm run build`        | Compile TypeScript to `dist/`              |
+| `npm start`            | Run the compiled build (run `build` first) |
+| `npm run typecheck`    | Type-check without emitting files          |
+| `npm run lint`         | Lint with ESLint                           |
+| `npm run format`       | Format with Prettier                       |
+| `npm run format:check` | Check formatting without changing files    |
+| `npm run db:up`        | Start local Postgres (Docker)              |
+| `npm run db:down`      | Stop local Postgres                        |
+| `npm run db:generate`  | Regenerate the Prisma client               |
 
 ## Verify it works
 
@@ -73,4 +74,14 @@ npm run db:up
 npm run dev
 curl localhost:3000/health      # {"status":"ok"}
 curl localhost:3000/health/db   # {"status":"ok","database":"connected"}
+```
+
+## Continuous integration
+
+GitHub Actions (`.github/workflows/ci.yml`) runs on every push to `main` and on
+every pull request: `npm ci`, lint, format check, typecheck and build. Run the
+same checks locally before pushing:
+
+```bash
+npm run lint && npm run format:check && npm run typecheck && npm run build
 ```

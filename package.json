@@ -14,7 +14,8 @@
     "db:up": "docker compose up -d --wait",
     "db:down": "docker compose down",
     "db:generate": "prisma generate",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "format:check": "prettier --check ."
   },
   "repository": {
     "type": "git",
