@@ -19,3 +19,12 @@ jobs:
           cache: npm
 
       - run: npm ci
+
+      - name: lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
