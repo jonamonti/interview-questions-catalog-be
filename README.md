@@ -52,6 +52,28 @@ the volume the same way so Postgres re-initialises.
 Prisma generates its client into `src/generated/prisma` on `npm install`
 (`postinstall`). Regenerate it manually with `npm run db:generate`.
 
+### Data model and migrations
+
+The schema lives in `prisma/schema.prisma`:
+
+- `Question`: title, Markdown answer, `Difficulty` (`EASY` | `MEDIUM` | `HARD`)
+  and timestamps
+- `Tag`: unique `name` and unique `slug`
+- `QuestionTag`: explicit join table between questions and tags. Its primary
+  key is `(questionId, tagId)`, it has an index on `tagId` for tag filtering,
+  and both foreign keys use `ON DELETE CASCADE`, so deleting a question or a
+  tag never leaves orphan rows.
+
+Migrations are SQL files in `prisma/migrations/` and are committed to git.
+
+```bash
+npm run db:migrate   # create and apply a migration after editing the schema
+npm run db:studio    # browse the data in Prisma Studio
+```
+
+`db:migrate` is for development. Production uses `prisma migrate deploy`, which
+only applies existing migrations.
+
 ## Scripts
 
 | Command               | What it does                               |
@@ -65,6 +87,8 @@ Prisma generates its client into `src/generated/prisma` on `npm install`
 | `npm run db:up`       | Start local Postgres (Docker)              |
 | `npm run db:down`     | Stop local Postgres                        |
 | `npm run db:generate` | Regenerate the Prisma client               |
+| `npm run db:migrate`  | Create and apply a Prisma migration        |
+| `npm run db:studio`   | Open Prisma Studio                         |
 
 ## Verify it works
 
