@@ -95,6 +95,29 @@ only applies existing migrations.
 ```bash
 npm run db:up
 npm run dev
-curl localhost:3000/health      # {"status":"ok"}
-curl localhost:3000/health/db   # {"status":"ok","database":"connected"}
+curl -i localhost:3000/api/health
 ```
+
+`GET /api/health` returns `200` when the API and the database are reachable and
+`503` when the database is down.
+
+### Response format
+
+Every response uses one envelope. See `docs/CONVENTIONS.md` for details.
+
+```json
+{ "success": true, "message": "Service is healthy", "data": {} }
+```
+
+```json
+{
+  "success": false,
+  "message": "Route GET /api/nope not found",
+  "error": { "code": "NOT_FOUND" }
+}
+```
+
+Unknown routes return `404`, malformed JSON returns `400` and unexpected errors
+return `500`. In `NODE_ENV=production` a `500` never includes a stack trace;
+in development the stack is in `error.details`. Each request is logged as
+`METHOD /path status duration`.
