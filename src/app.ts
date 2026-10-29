@@ -1,21 +1,15 @@
 import express from "express";
-import { prisma } from "./db";
+import errorHandler from "./middlewares/error-handler";
+import apiRoutes from "./api.routes";
+import requestLogger from "./middlewares/request-logger";
+import notFoundHandler from "./middlewares/not-found";
 
 const app = express();
 
+app.use(requestLogger);
 app.use(express.json());
-
-app.get("/health", (_req, res) => {
-  res.json({ status: "ok" });
-});
-
-app.get("/health/db", async (_req, res) => {
-  try {
-    await prisma.$queryRaw`SELECT 1`;
-    res.json({ status: "ok", database: "connected" });
-  } catch {
-    res.status(503).json({ status: "error", database: "unreachable" });
-  }
-});
+app.use("/api", apiRoutes);
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 export default app;
