@@ -1,7 +1,8 @@
 import type { ErrorRequestHandler } from "express";
+import { Prisma } from "../generated/prisma/client";
 import { AppError } from "../utils/app-error";
 import type { ErrorResponse } from "../common/types/api-response.types";
-import { errorCode } from "../constants/error-codes.constants";
+import { type ErrorCode, errorCode } from "../constants/error-codes.constants";
 import { httpStatus } from "../constants/http-status.constants";
 import { NODE_ENV } from "../config";
 import { ZodError } from "zod";
@@ -23,6 +24,27 @@ const formatZodIssues = (error: ZodError) =>
           },
         ],
   );
+
+const prismaErrorMap: Record<
+  string,
+  { status: number; code: ErrorCode; message: string }
+> = {
+  P2002: {
+    status: httpStatus.CONFLICT,
+    code: errorCode.CONFLICT,
+    message: "Resource already exists",
+  },
+  P2003: {
+    status: httpStatus.CONFLICT,
+    code: errorCode.CONFLICT,
+    message: "Related resource constraint failed",
+  },
+  P2025: {
+    status: httpStatus.NOT_FOUND,
+    code: errorCode.NOT_FOUND,
+    message: "Resource not found",
+  },
+};
 
 const errorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
   if (error instanceof AppError) {
@@ -46,6 +68,19 @@ const errorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
     };
     res.status(httpStatus.BAD_REQUEST).json(body);
     return;
+  }
+
+  if (error instanceof Prisma.PrismaClientKnownRequestError) {
+    const mapped = prismaErrorMap[error.code];
+    if (mapped) {
+      const body: ErrorResponse = {
+        success: false,
+        message: mapped.message,
+        error: { code: mapped.code },
+      };
+      res.status(mapped.status).json(body);
+      return;
+    }
   }
 
   if (isMalformedJson(error)) {
