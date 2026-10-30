@@ -76,8 +76,20 @@ its tags) can share one `prisma.$transaction`.
 - Query-string numbers are coerced (`z.coerce.number()`). Pagination uses one
   shared `paginationQuerySchema` in `src/common/schemas`: `page` defaults to 1,
   `limit` to 10 with a maximum; `skip` is derived, never client-supplied.
+  `toPagination` in `src/utils/to-pagination.ts` turns the parsed query into
+  Prisma's `{ skip, take }`. Keep the schema a plain object (no `.transform`)
+  so endpoints can `.extend()` it with filters.
 - Zod checks format, type and length. The database enforces uniqueness,
   foreign keys and NOT NULL. Do not duplicate one in the other.
+- Validate with the `validate({ body, query, params })` middleware
+  (`src/middlewares/validate.ts`). It parses each part and stores the result in
+  `req.validated`; controllers read from there, never from the raw `req.body`.
+  A failure throws a `ZodError`, which the error handler turns into a 400 with
+  `error.details: [{ path, message }]` (one entry per failed field and per
+  unknown key). Schemas are synchronous: no async refinements, so `parse` is
+  enough.
+- `src/modules/echo` is the reference example of a validated route (schema,
+  validation, controller, routes). INT-11 replaces it with real endpoints.
 
 ## 5. Responses and errors
 
