@@ -129,9 +129,51 @@ POST / PATCH / DELETE routes require the `API_KEY` from your `.env`, sent in the
 `x-api-key` header. A missing or wrong key returns `401`; GET routes are public.
 Generate a key with `openssl rand -hex 32`.
 
+## Endpoints
+
+### `POST /api/questions` (API key required)
+
+Creates a question and attaches tags by name in one request.
+
 ```bash
-curl -i -X POST localhost:3000/api/echo \
+curl -i -X POST localhost:3000/api/questions \
   -H "Content-Type: application/json" \
   -H "x-api-key: <your key>" \
-  -d '{"message":"hi"}'
+  -d '{
+    "title": "What is a closure?",
+    "answer": "A function that **remembers** the scope it was created in.",
+    "difficulty": "MEDIUM",
+    "tags": ["React", "node.js"]
+  }'
+```
+
+| Field        | Rules                                             |
+| ------------ | ------------------------------------------------- |
+| `title`      | required, trimmed, 1 to 200 characters            |
+| `answer`     | required, Markdown, trimmed, at least 1 character |
+| `difficulty` | required, `EASY`, `MEDIUM` or `HARD`              |
+| `tags`       | optional, up to 10 names, each 1 to 50 characters |
+
+Unknown fields are rejected with `400`. Tag names are trimmed and lowercased,
+and duplicates in the same request are dropped, so `"React"` and `" react "`
+are one tag. A tag that already exists is reused; new names create new tags
+(slug: `node.js` becomes `node-js`, `c++` becomes `c-plus-plus`). The question
+and its tags are saved in one transaction, so a failure saves nothing.
+
+Returns `201`:
+
+```json
+{
+  "success": true,
+  "message": "Question created successfully",
+  "data": {
+    "id": 1,
+    "title": "What is a closure?",
+    "answer": "A function that **remembers** the scope it was created in.",
+    "difficulty": "MEDIUM",
+    "tags": [{ "id": 1, "name": "node.js", "slug": "node-js" }],
+    "createdAt": "2026-10-30T23:09:03.941Z",
+    "updatedAt": "2026-10-30T23:09:03.941Z"
+  }
+}
 ```

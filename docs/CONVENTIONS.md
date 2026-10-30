@@ -88,8 +88,14 @@ its tags) can share one `prisma.$transaction`.
   `error.details: [{ path, message }]` (one entry per failed field and per
   unknown key). Schemas are synchronous: no async refinements, so `parse` is
   enough.
-- `src/modules/echo` is the reference example of a validated route (schema,
-  validation, controller, routes). INT-11 replaces it with real endpoints.
+- `src/modules/question` is the reference example of a full module (schema,
+  validation, controller, service, repository, format, routes). Copy its shape
+  for new endpoints.
+- Normalize input in the schema (`.trim().toLowerCase()`), not in controllers.
+  Tag slugs are derived from the normalized name with `toSlug`
+  (`src/utils/to-slug.ts`).
+- Prisma errors are mapped centrally by the error handler: `P2002` and `P2003`
+  give 409, `P2025` gives 404. Anything else is a generic 500.
 
 ## 5. Responses and errors
 
