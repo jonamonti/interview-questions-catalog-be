@@ -127,7 +127,9 @@ status, Prisma `P2002` -> 409, `P2025` -> 404, `P2003` -> 409, anything else ->
 
 - Every route is under `/api` (`/api/questions`, `/api/tags`). Resources are
   plural. Use GET, POST, PATCH, DELETE with their usual meaning.
-- Reads are public. POST / PATCH / DELETE go through the API-key middleware.
+- Reads are public. POST / PATCH / DELETE go through the API-key middleware
+  (`x-api-key` header, compared in constant time). A missing and a wrong key
+  both return 401, so a caller learns nothing about the key.
 - Health check: `GET /api/health` (also reports whether the database is reachable).
 - Order in a route: API key -> validation -> controller.
 

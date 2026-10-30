@@ -30,6 +30,7 @@ Edit `.env` if you need different ports or credentials.
 | `POSTGRES_PASSWORD` | none          | Database password created by Docker         |
 | `POSTGRES_DB`       | none          | Database name created by Docker             |
 | `DATABASE_URL`      | none          | Connection string used by Prisma (required) |
+| `API_KEY`           | none          | Secret for write requests (required)        |
 
 `.env.example` has working local values for all of them. Keep `DATABASE_URL`
 consistent with the `POSTGRES_*` values and port 5432.
@@ -121,3 +122,16 @@ Unknown routes return `404`, malformed JSON returns `400` and unexpected errors
 return `500`. In `NODE_ENV=production` a `500` never includes a stack trace;
 in development the stack is in `error.details`. Each request is logged as
 `METHOD /path status duration`.
+
+### Write requests need the API key
+
+POST / PATCH / DELETE routes require the `API_KEY` from your `.env`, sent in the
+`x-api-key` header. A missing or wrong key returns `401`; GET routes are public.
+Generate a key with `openssl rand -hex 32`.
+
+```bash
+curl -i -X POST localhost:3000/api/echo \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: <your key>" \
+  -d '{"message":"hi"}'
+```
