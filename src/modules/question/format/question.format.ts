@@ -1,6 +1,6 @@
 import { QuestionWithTags } from "../repositories/question-write.repository";
 
-export const formatCreateQuestion = (question: QuestionWithTags) => ({
+export const formatQuestion = (question: QuestionWithTags) => ({
   id: question.id,
   title: question.title,
   answer: question.answer,
@@ -14,4 +14,4 @@ export const formatCreateQuestion = (question: QuestionWithTags) => ({
   updatedAt: question.updatedAt,
 });
 
-export type QuestionResponse = ReturnType<typeof formatCreateQuestion>;
+export type QuestionResponse = ReturnType<typeof formatQuestion>;
