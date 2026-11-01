@@ -129,90 +129,20 @@ POST / PATCH / DELETE routes require the `API_KEY` from your `.env`, sent in the
 `x-api-key` header. A missing or wrong key returns `401`; GET routes are public.
 Generate a key with `openssl rand -hex 32`.
 
-## Endpoints
+## API documentation
 
-### `POST /api/questions` (API key required)
+The API is documented with OpenAPI, generated from the same Zod schemas that
+validate requests, so it cannot drift from the code.
 
-Creates a question and attaches tags by name in one request.
+- Interactive docs (Swagger UI): `http://localhost:3000/api/docs`
+- Raw document (import it into Postman): `http://localhost:3000/api/openapi.json`
 
-```bash
-curl -i -X POST localhost:3000/api/questions \
-  -H "Content-Type: application/json" \
-  -H "x-api-key: <your key>" \
-  -d '{
-    "title": "What is a closure?",
-    "answer": "A function that **remembers** the scope it was created in.",
-    "difficulty": "MEDIUM",
-    "tags": ["React", "node.js"]
-  }'
-```
+| Endpoint              | Access      | What it does                                |
+| --------------------- | ----------- | ------------------------------------------- |
+| `GET /api/health`     | public      | API and database status                     |
+| `GET /api/questions`  | public      | Paginated list of questions with their tags |
+| `POST /api/questions` | `x-api-key` | Create a question and attach tags by name   |
 
-| Field        | Rules                                             |
-| ------------ | ------------------------------------------------- |
-| `title`      | required, trimmed, 1 to 200 characters            |
-| `answer`     | required, Markdown, trimmed, at least 1 character |
-| `difficulty` | required, `EASY`, `MEDIUM` or `HARD`              |
-| `tags`       | optional, up to 10 names, each 1 to 50 characters |
-
-Unknown fields are rejected with `400`. Tag names are trimmed and lowercased,
-and duplicates in the same request are dropped, so `"React"` and `" react "`
-are one tag. A tag that already exists is reused; new names create new tags
-(slug: `node.js` becomes `node-js`, `c++` becomes `c-plus-plus`). The question
-and its tags are saved in one transaction, so a failure saves nothing.
-
-Returns `201`:
-
-```json
-{
-  "success": true,
-  "message": "Question created successfully",
-  "data": {
-    "id": 1,
-    "title": "What is a closure?",
-    "answer": "A function that **remembers** the scope it was created in.",
-    "difficulty": "MEDIUM",
-    "tags": [{ "id": 1, "name": "node.js", "slug": "node-js" }],
-    "createdAt": "2026-10-30T23:09:03.941Z",
-    "updatedAt": "2026-10-30T23:09:03.941Z"
-  }
-}
-```
-
-### `GET /api/questions` (public)
-
-Lists questions, newest first (ties broken by id), with their tags.
-
-```bash
-curl "localhost:3000/api/questions?page=2&limit=5"
-```
-
-| Param   | Default | Rules                                                      |
-| ------- | ------- | ---------------------------------------------------------- |
-| `page`  | `1`     | integer, at least 1                                        |
-| `limit` | `10`    | integer, 1 to 100. A larger value is rejected with a `400` |
-
-Unknown query params are rejected with a `400`. A page past the end returns an
-empty `list` (not an error) and the real `total`.
-
-Returns `200`:
-
-```json
-{
-  "success": true,
-  "message": "Questions retrieved successfully",
-  "data": {
-    "pagination": { "page": 1, "limit": 10, "total": 1, "totalPages": 1 },
-    "list": [
-      {
-        "id": 1,
-        "title": "What is a closure?",
-        "answer": "A function that **remembers** the scope it was created in.",
-        "difficulty": "MEDIUM",
-        "tags": [{ "id": 1, "name": "node.js", "slug": "node-js" }],
-        "createdAt": "2026-10-30T23:09:03.941Z",
-        "updatedAt": "2026-10-30T23:09:03.941Z"
-      }
-    ]
-  }
-}
-```
+In Swagger UI, click **Authorize** and paste your `API_KEY` to try the write
+endpoints. Endpoint details (parameters, bodies, responses, errors) live only
+in the OpenAPI document: `src/openapi/openapi.document.ts`.

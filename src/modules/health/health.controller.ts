@@ -6,8 +6,7 @@ import {
 } from "../../common/types/api-response.types";
 import { errorCode } from "../../constants/error-codes.constants";
 import { httpStatus } from "../../constants/http-status.constants";
-
-type HealthData = { status: "ok"; database: "connected" };
+import type { HealthResponse } from "./schemas/health-response.schema";
 
 const healthController: RequestHandler = async (_req, res) => {
   try {
@@ -23,7 +22,7 @@ const healthController: RequestHandler = async (_req, res) => {
     return;
   }
 
-  const body: SuccessResponse<HealthData> = {
+  const body: SuccessResponse<HealthResponse> = {
     success: true,
     message: "Service is healthy",
     data: { status: "ok", database: "connected" },
