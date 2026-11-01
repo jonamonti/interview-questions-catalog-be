@@ -5,8 +5,11 @@ import {
   countQuestions,
   findQuestions,
 } from "../repositories/question-read.repository";
+import { QuestionListResponse } from "../schemas/question-response.schema";
 
-const listQuestionsService = async (query: PaginationQuery) => {
+const listQuestionsService = async (
+  query: PaginationQuery,
+): Promise<QuestionListResponse> => {
   const [questions, total] = await Promise.all([
     findQuestions(toPagination(query)),
     countQuestions(),
@@ -22,9 +25,5 @@ const listQuestionsService = async (query: PaginationQuery) => {
     list: questions.map(formatQuestion),
   };
 };
-
-export type ListQuestionsResponse = Awaited<
-  ReturnType<typeof listQuestionsService>
->;
 
 export default listQuestionsService;

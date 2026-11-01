@@ -137,6 +137,10 @@ status, Prisma `P2002` -> 409, `P2025` -> 404, `P2003` -> 409, anything else ->
   (`x-api-key` header, compared in constant time). A missing and a wrong key
   both return 401, so a caller learns nothing about the key.
 - Health check: `GET /api/health` (also reports whether the database is reachable).
+- Every endpoint is documented in `src/openapi/openapi.document.ts`, built from
+  the Zod schemas and served at `/api/docs` and `/api/openapi.json`. Response
+  schemas carry `.meta({ id })`, and format functions return the inferred type so
+  the code and the docs cannot disagree.
 - Order in a route: API key -> validation -> controller.
 
 ## 7. Database (PostgreSQL + Prisma 7)
@@ -184,6 +188,8 @@ status, Prisma `P2002` -> 409, `P2025` -> 404, `P2003` -> 409, anything else ->
 - [ ] Request schemas are `.strict()`; types come from `z.infer`
 - [ ] Controllers are thin; services hold no HTTP or validation code
 - [ ] Responses use the standard envelope and `httpStatus` constants
+- [ ] The endpoint is documented in `src/openapi/openapi.document.ts` (path,
+      params or body, every response status, `security` on write routes)
 - [ ] Schema changes include a committed migration
 - [ ] New environment variables are in `.env.example` and the README
 - [ ] CI is green
@@ -194,4 +200,4 @@ status, Prisma `P2002` -> 409, `P2025` -> 404, `P2003` -> 409, anything else ->
 
 Authentication, `roleGuard`, JWT / cookies and audit logging (this API has no
 accounts), MySQL specifics, `cuid()` IDs, `@/` path aliases, Husky /
-lint-staged and OpenAPI / Swagger (possible later tickets).
+lint-staged.

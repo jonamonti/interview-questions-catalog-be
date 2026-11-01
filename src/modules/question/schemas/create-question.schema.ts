@@ -25,6 +25,13 @@ export const createQuestionSchema = z
   .meta({
     id: "CreateQuestion",
     description: "Body of POST /api/questions",
+    example: {
+      title: "What is a closure in JavaScript?",
+      answer:
+        "A function that **remembers** the scope it was created in.\n\n```js\nconst counter = () => {\n  let count = 0;\n  return () => ++count;\n};\n```",
+      difficulty: "MEDIUM",
+      tags: ["javascript", "closures"],
+    },
   });
 
 export type CreateQuestionRequest = z.infer<typeof createQuestionSchema>;

@@ -28,5 +28,8 @@ Follow `docs/CONVENTIONS.md` for structure, naming, responses and testing.
 - Arrow functions and modern JavaScript.
 - Branch per ticket from an up-to-date `main`; PRs say `Closes INT-xx` only when
   the ticket is fully done, otherwise `Part of INT-xx`.
+- Every endpoint is documented in the OpenAPI document
+  (`src/openapi/openapi.document.ts`, served at `/api/docs`), built from the Zod
+  schemas. Do not document endpoints in the README.
 - Every environment variable the code reads goes in `.env.example`.
 - Do not commit `.env` or secrets.
