@@ -177,3 +177,42 @@ Returns `201`:
   }
 }
 ```
+
+### `GET /api/questions` (public)
+
+Lists questions, newest first (ties broken by id), with their tags.
+
+```bash
+curl "localhost:3000/api/questions?page=2&limit=5"
+```
+
+| Param   | Default | Rules                                                      |
+| ------- | ------- | ---------------------------------------------------------- |
+| `page`  | `1`     | integer, at least 1                                        |
+| `limit` | `10`    | integer, 1 to 100. A larger value is rejected with a `400` |
+
+Unknown query params are rejected with a `400`. A page past the end returns an
+empty `list` (not an error) and the real `total`.
+
+Returns `200`:
+
+```json
+{
+  "success": true,
+  "message": "Questions retrieved successfully",
+  "data": {
+    "pagination": { "page": 1, "limit": 10, "total": 1, "totalPages": 1 },
+    "list": [
+      {
+        "id": 1,
+        "title": "What is a closure?",
+        "answer": "A function that **remembers** the scope it was created in.",
+        "difficulty": "MEDIUM",
+        "tags": [{ "id": 1, "name": "node.js", "slug": "node-js" }],
+        "createdAt": "2026-10-30T23:09:03.941Z",
+        "updatedAt": "2026-10-30T23:09:03.941Z"
+      }
+    ]
+  }
+}
+```

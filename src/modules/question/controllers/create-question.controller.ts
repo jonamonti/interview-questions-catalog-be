@@ -2,7 +2,7 @@ import type { RequestHandler } from "express";
 import { CreateQuestionRequest } from "../schemas/create-question.schema";
 import createQuestionService from "../services/create-question.service";
 import { SuccessResponse } from "../../../common/types/api-response.types";
-import { QuestionResponse } from "../format/create-question.format";
+import { QuestionResponse } from "../format/question.format";
 import { httpStatus } from "../../../constants/http-status.constants";
 
 const createQuestionController: RequestHandler = async (req, res) => {
