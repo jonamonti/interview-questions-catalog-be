@@ -8,6 +8,8 @@ import updateQuestionValidation from "./validation/update-question.validation";
 import updateQuestionController from "./controllers/update-question.controller";
 import deleteQuestionValidation from "./validation/delete-question.validation";
 import deleteQuestionController from "./controllers/delete-question.controller";
+import getQuestionValidation from "./validation/get-question.validation";
+import getQuestionController from "./controllers/get-question.controller";
 
 const questionRoutes = Router();
 questionRoutes.post(
@@ -17,6 +19,7 @@ questionRoutes.post(
   createQuestionController,
 );
 questionRoutes.get("/", listQuestionsValidation, listQuestionsController);
+questionRoutes.get("/:id", getQuestionValidation, getQuestionController);
 questionRoutes.patch(
   "/:id",
   apiKey,
