@@ -6,6 +6,8 @@ import {
 } from "../common/schemas/api-response.schema";
 import { healthResponseSchema } from "../modules/health/schemas/health-response.schema";
 import { createQuestionSchema } from "../modules/question/schemas/create-question.schema";
+import { questionIdParamsSchema } from "../modules/question/schemas/question-id-params.schema";
+import { updateQuestionSchema } from "../modules/question/schemas/update-question.schema";
 import { listQuestionsQuerySchema } from "../modules/question/schemas/list-questions-query.schema";
 import {
   questionListResponseSchema,
@@ -91,6 +93,44 @@ export const openApiDocument = createDocument({
           "400": validationError,
           "401": unauthorized,
           "409": errorResponse("A tag was created at the same time"),
+          "500": serverError,
+        },
+      },
+    },
+    "/api/questions/{id}": {
+      patch: {
+        tags: ["Questions"],
+        summary: "Update a question; tags, if sent, replace the current set",
+        security: [{ ApiKeyAuth: [] }],
+        requestParams: { path: questionIdParamsSchema },
+        requestBody: { content: json(updateQuestionSchema) },
+        responses: {
+          "200": {
+            description: "The updated question",
+            content: json(
+              successResponseSchema(
+                "UpdateQuestionResponse",
+                questionResponseSchema,
+              ),
+            ),
+          },
+          "400": validationError,
+          "401": unauthorized,
+          "404": errorResponse("Question not found"),
+          "409": errorResponse("A tag was created at the same time"),
+          "500": serverError,
+        },
+      },
+      delete: {
+        tags: ["Questions"],
+        summary: "Delete a question; its tags stay",
+        security: [{ ApiKeyAuth: [] }],
+        requestParams: { path: questionIdParamsSchema },
+        responses: {
+          "204": { description: "Question deleted" },
+          "400": validationError,
+          "401": unauthorized,
+          "404": errorResponse("Question not found"),
           "500": serverError,
         },
       },

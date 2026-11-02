@@ -10,16 +10,19 @@ const tagNameSchema = z
   .max(50)
   .refine((name) => toSlug(name) !== "", "Tag must contain letters or numbers");
 
+export const questionTitleSchema = z.string().trim().min(1).max(200);
+export const questionAnswerSchema = z.string().trim().min(1);
+export const questionTagsSchema = z
+  .array(tagNameSchema)
+  .max(10)
+  .transform((names) => [...new Set(names)]);
+
 export const createQuestionSchema = z
   .object({
-    title: z.string().trim().min(1).max(200),
-    answer: z.string().trim().min(1),
+    title: questionTitleSchema,
+    answer: questionAnswerSchema,
     difficulty: z.enum(Difficulty),
-    tags: z
-      .array(tagNameSchema)
-      .max(10)
-      .transform((names) => [...new Set(names)])
-      .default([]),
+    tags: questionTagsSchema.default([]),
   })
   .strict()
   .meta({
