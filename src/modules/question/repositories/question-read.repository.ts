@@ -37,3 +37,9 @@ export const findQuestions = ({
 
 export const countQuestions = (filter: QuestionFilter) =>
   prisma.question.count({ where: buildWhere(filter) });
+
+export const findQuestionById = (id: number) =>
+  prisma.question.findFirstOrThrow({
+    where: { id },
+    include: questionWithTagsInclude,
+  });

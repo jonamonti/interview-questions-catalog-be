@@ -98,6 +98,25 @@ export const openApiDocument = createDocument({
       },
     },
     "/api/questions/{id}": {
+      get: {
+        tags: ["Questions"],
+        summary: "Get one question with its full answer and tags",
+        requestParams: { path: questionIdParamsSchema },
+        responses: {
+          "200": {
+            description: "The question",
+            content: json(
+              successResponseSchema(
+                "GetQuestionResponse",
+                questionResponseSchema,
+              ),
+            ),
+          },
+          "400": validationError,
+          "404": errorResponse("Question not found"),
+          "500": serverError,
+        },
+      },
       patch: {
         tags: ["Questions"],
         summary: "Update a question; tags, if sent, replace the current set",
