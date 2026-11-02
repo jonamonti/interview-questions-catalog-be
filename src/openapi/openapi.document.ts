@@ -4,9 +4,9 @@ import {
   errorResponseSchema,
   successResponseSchema,
 } from "../common/schemas/api-response.schema";
-import { paginationQuerySchema } from "../common/schemas/pagination.schema";
 import { healthResponseSchema } from "../modules/health/schemas/health-response.schema";
 import { createQuestionSchema } from "../modules/question/schemas/create-question.schema";
+import { listQuestionsQuerySchema } from "../modules/question/schemas/list-questions-query.schema";
 import {
   questionListResponseSchema,
   questionResponseSchema,
@@ -57,8 +57,8 @@ export const openApiDocument = createDocument({
     "/api/questions": {
       get: {
         tags: ["Questions"],
-        summary: "List questions, newest first",
-        requestParams: { query: paginationQuerySchema },
+        summary: "List questions, newest first, optionally filtered by tags",
+        requestParams: { query: listQuestionsQuerySchema },
         responses: {
           "200": {
             description: "A page of questions",

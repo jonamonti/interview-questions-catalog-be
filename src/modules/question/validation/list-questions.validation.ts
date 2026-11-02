@@ -1,5 +1,5 @@
-import { paginationQuerySchema } from "../../../common/schemas/pagination.schema";
 import validate from "../../../middlewares/validate";
+import { listQuestionsQuerySchema } from "../schemas/list-questions-query.schema";
 
-const listQuestionsValidation = validate({ query: paginationQuerySchema });
+const listQuestionsValidation = validate({ query: listQuestionsQuerySchema });
 export default listQuestionsValidation;
