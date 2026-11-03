@@ -22,15 +22,16 @@ Edit `.env` if you need different ports or credentials.
 
 ## Environment variables
 
-| Variable            | Default       | Description                                 |
-| ------------------- | ------------- | ------------------------------------------- |
-| `PORT`              | `3000`        | Port the server uses                        |
-| `NODE_ENV`          | `development` | Runtime environment                         |
-| `POSTGRES_USER`     | none          | Database user created by Docker             |
-| `POSTGRES_PASSWORD` | none          | Database password created by Docker         |
-| `POSTGRES_DB`       | none          | Database name created by Docker             |
-| `DATABASE_URL`      | none          | Connection string used by Prisma (required) |
-| `API_KEY`           | none          | Secret for write requests (required)        |
+| Variable            | Default                 | Description                                                    |
+| ------------------- | ----------------------- | -------------------------------------------------------------- |
+| `PORT`              | `3000`                  | Port the server uses                                           |
+| `NODE_ENV`          | `development`           | Runtime environment                                            |
+| `POSTGRES_USER`     | none                    | Database user created by Docker                                |
+| `POSTGRES_PASSWORD` | none                    | Database password created by Docker                            |
+| `POSTGRES_DB`       | none                    | Database name created by Docker                                |
+| `DATABASE_URL`      | none                    | Connection string used by Prisma (required)                    |
+| `API_KEY`           | none                    | Secret for write requests (required)                           |
+| `CORS_ORIGINS`      | `http://localhost:5173` | Comma-separated origins allowed to call the API from a browser |
 
 `.env.example` has working local values for all of them. Keep `DATABASE_URL`
 consistent with the `POSTGRES_*` values and port 5432.

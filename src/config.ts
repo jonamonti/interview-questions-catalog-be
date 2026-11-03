@@ -12,3 +12,9 @@ export const PORT = Number(process.env.PORT) || 3000;
 export const NODE_ENV = process.env.NODE_ENV || "development";
 export const DATABASE_URL = required("DATABASE_URL");
 export const API_KEY = required("API_KEY");
+export const CORS_ORIGINS = (
+  process.env.CORS_ORIGINS || "http://localhost:5173"
+)
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
