@@ -9,6 +9,10 @@ export default defineConfig([
   tseslint.configs.recommended,
   prettier,
   {
+    files: ["**/*.cjs"],
+    languageOptions: { globals: { module: "writable", require: "readonly" } },
+  },
+  {
     rules: {
       "@typescript-eslint/no-unused-vars": [
         "error",

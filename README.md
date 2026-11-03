@@ -76,6 +76,15 @@ npm run db:studio    # browse the data in Prisma Studio
 `db:migrate` is for development. Production uses `prisma migrate deploy`, which
 only applies existing migrations.
 
+## Tests
+
+`npm test` runs the whole suite (unit tests with mocks and integration tests
+with Supertest). The integration tests need Postgres, so run `npm run db:up`
+first. They use their own database, `interview_catalog_test`, on the same
+container: it is created and migrated automatically, emptied before every
+test, and never touches your development data. Set `TEST_DATABASE_URL` in your
+shell to use a different server; its database name must end in `_test`.
+
 ## Scripts
 
 | Command               | What it does                               |
@@ -84,6 +93,7 @@ only applies existing migrations.
 | `npm run build`       | Compile TypeScript to `dist/`              |
 | `npm start`           | Run the compiled build (run `build` first) |
 | `npm run typecheck`   | Type-check without emitting files          |
+| `npm test`            | Run unit and integration tests             |
 | `npm run lint`        | Lint with ESLint                           |
 | `npm run format`      | Format with Prettier                       |
 | `npm run db:up`       | Start local Postgres (Docker)              |

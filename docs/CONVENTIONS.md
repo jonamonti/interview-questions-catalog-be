@@ -171,7 +171,11 @@ status, Prisma `P2002` -> 409, `P2025` -> 404, `P2003` -> 409, anything else ->
 
 ## 10. Testing (Jest + Supertest, from INT-18)
 
-- A `.test.ts` file sits next to the file it tests.
+- Unit tests: a `.test.ts` file sits next to the file it tests.
+- Integration tests: `<endpoint>.integration.test.ts` at the module root
+  (e.g. `create-question.integration.test.ts`). They send real HTTP requests
+  with Supertest through the whole stack, so they belong to an endpoint, not
+  to one layer.
 - One flat `describe` per function (no nesting). Prefix the name to group
   scenarios: `describe('errorHandler - ZodError handling', ...)`.
 - Each `it` uses the AAA pattern with `// ARRANGE`, `// ACT`, `// ASSERT`
@@ -179,7 +183,13 @@ status, Prisma `P2002` -> 409, `P2025` -> 404, `P2003` -> 409, anything else ->
 - `beforeEach(() => jest.clearAllMocks())`. Do not use `mockReset`.
 - Service tests mock repositories; repository tests mock the Prisma client;
   controller tests mock services. Integration tests use a separate test
-  database, never development data.
+  database (`interview_catalog_test`), never development data: `src/test/`
+  refuses to run unless the database name ends in `_test`, creates it and
+  applies the migrations once per run, and truncates the tables before each
+  test (`resetDatabase`). Arrange data with `seedQuestion`, not through the
+  endpoint under test.
+- Cover at least one success and one failure case per endpoint; write
+  assertions on the body and on the database, not only on the status code.
 - Use `as never` for awkward mock return types instead of `eslint-disable`.
 
 ## 11. Pull request checklist

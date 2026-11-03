@@ -10,6 +10,7 @@ Follow `docs/CONVENTIONS.md` for structure, naming, responses and testing.
 - `npm run dev`: dev server with auto-reload
 - `npm run lint`, `npx prettier --check .`, `npm run typecheck`, `npm run build`: the checks CI runs
 - `npm run db:up` / `db:down`: start / stop local Postgres (Docker Compose, port 5432)
+- `npm test`: Jest unit + integration tests (needs `npm run db:up`; uses the separate `interview_catalog_test` database, created automatically)
 - `npm run db:migrate`: create and apply a migration; `npm run db:studio`: browse data
 
 ## Gotchas
