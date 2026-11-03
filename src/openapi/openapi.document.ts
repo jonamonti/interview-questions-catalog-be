@@ -5,6 +5,7 @@ import {
   successResponseSchema,
 } from "../common/schemas/api-response.schema";
 import { healthResponseSchema } from "../modules/health/schemas/health-response.schema";
+import { tagListResponseSchema } from "../modules/tag/schemas/tag-list-response.schema";
 import { createQuestionSchema } from "../modules/question/schemas/create-question.schema";
 import { questionIdParamsSchema } from "../modules/question/schemas/question-id-params.schema";
 import { updateQuestionSchema } from "../modules/question/schemas/update-question.schema";
@@ -150,6 +151,22 @@ export const openApiDocument = createDocument({
           "400": validationError,
           "401": unauthorized,
           "404": errorResponse("Question not found"),
+          "500": serverError,
+        },
+      },
+    },
+    "/api/tags": {
+      get: {
+        tags: ["Tags"],
+        summary:
+          "List tags with their question counts, sorted by name; tags with no questions are left out",
+        responses: {
+          "200": {
+            description: "Every tag in use",
+            content: json(
+              successResponseSchema("ListTagsResponse", tagListResponseSchema),
+            ),
+          },
           "500": serverError,
         },
       },
