@@ -85,6 +85,15 @@ container: it is created and migrated automatically, emptied before every
 test, and never touches your development data. Set `TEST_DATABASE_URL` in your
 shell to use a different server; its database name must end in `_test`.
 
+## CI
+
+GitHub Actions (`.github/workflows/ci.yml`) runs on every push to `main` and on
+every pull request: lint, typecheck, build and `npm test`. The tests run against
+a throwaway Postgres 16 service container (with a healthcheck) that exists only
+for that run, so no real data is ever touched. The test setup creates and
+migrates the `interview_catalog_test` database itself, so the workflow has no
+separate migration step. A failing test fails the workflow.
+
 ## Scripts
 
 | Command               | What it does                               |
