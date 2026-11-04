@@ -76,6 +76,23 @@ npm run db:studio    # browse the data in Prisma Studio
 `db:migrate` is for development. Production uses `prisma migrate deploy`, which
 only applies existing migrations.
 
+### Dummy data for development
+
+`npm run db:seed` loads 8 placeholder questions (titles start with `[DUMMY]`,
+tags follow the lowercase, hyphenated convention) so the frontend has something
+to show. It goes through the real API, so the dev server must be running:
+
+```bash
+npm run db:up
+npm run dev          # in one terminal
+npm run db:seed      # in another
+```
+
+It is safe to run twice: questions whose title already exists are skipped. It
+only talks to `http://localhost:$PORT` and refuses to run with
+`NODE_ENV=production`. To remove the dummy data, delete the questions whose
+title starts with `[DUMMY]` (Prisma Studio: `npm run db:studio`).
+
 ## Tests
 
 `npm test` runs the whole suite (unit tests with mocks and integration tests
@@ -110,6 +127,7 @@ separate migration step. A failing test fails the workflow.
 | `npm run db:generate` | Regenerate the Prisma client               |
 | `npm run db:migrate`  | Create and apply a Prisma migration        |
 | `npm run db:studio`   | Open Prisma Studio                         |
+| `npm run db:seed`     | Load dummy questions (dev server running)  |
 
 ## Verify it works
 
