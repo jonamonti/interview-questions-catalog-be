@@ -4,13 +4,13 @@ import {
   questionTagsSchema,
   questionTitleSchema,
 } from "./create-question.schema";
-import { Difficulty } from "../../../generated/prisma/enums";
+import { apiDifficulty } from "../../../constants/difficulty.constants";
 
 export const updateQuestionSchema = z
   .object({
     title: questionTitleSchema.optional(),
     answer: questionAnswerSchema.optional(),
-    difficulty: z.enum(Difficulty).optional(),
+    difficulty: z.enum(apiDifficulty).optional(),
     tags: questionTagsSchema.optional(),
   })
   .strict()

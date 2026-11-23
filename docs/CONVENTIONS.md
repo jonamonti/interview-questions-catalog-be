@@ -65,7 +65,13 @@ its tags) can share one `prisma.$transaction`.
 - Zod schemas: `camelCase` + `Schema` (`createQuestionSchema`).
 - Types from Zod: `PascalCase` + `Request` / `Response` / `Query`
   (`CreateQuestionRequest`). Never hand-write a type a schema already gives you.
-- Enums: `PascalCase` name, `UPPER_CASE` members (`Difficulty.EASY`).
+- Enums: `PascalCase` name, `UPPER_CASE` members (`Difficulty.EASY`). The API
+  never exposes them as they are: request and response values are lowercase
+  (`easy`), listed in `src/constants/`. Convert at the boundary with
+  `toDbDifficulty` (repository) and `toApiDifficulty` (format layer).
+- The API returns data in the shape the frontend needs (no reshaping in the
+  frontend). Derived response fields are computed in the format layer by a pure,
+  unit-tested function (for example `splitAnswer` for `lead` and `body`).
 - Imports are relative (`../services/...`). No path aliases.
 
 ## 4. Validation (Zod 4)

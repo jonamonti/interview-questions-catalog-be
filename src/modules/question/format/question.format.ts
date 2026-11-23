@@ -1,5 +1,7 @@
+import toApiDifficulty from "../../../utils/to-api-difficulty";
 import { QuestionWithTags } from "../repositories/question-write.repository";
 import { QuestionResponse } from "../schemas/question-response.schema";
+import { splitAnswer } from "./split-answer.format";
 
 export const formatQuestion = (
   question: QuestionWithTags,
@@ -7,7 +9,8 @@ export const formatQuestion = (
   id: question.id,
   title: question.title,
   answer: question.answer,
-  difficulty: question.difficulty,
+  ...splitAnswer(question.answer),
+  difficulty: toApiDifficulty(question.difficulty),
   tags: question.questionTags.map(({ tag }) => ({
     id: tag.id,
     name: tag.name,

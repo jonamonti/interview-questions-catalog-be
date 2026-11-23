@@ -25,9 +25,52 @@ describe("GET /api/questions/:id", () => {
       id: question.id,
       title: "What is a closure?",
       answer: "**md** answer",
-      difficulty: "MEDIUM",
+      difficulty: "medium",
     });
     expect(slugsOf(response.body.data.tags)).toEqual(["javascript", "react"]);
+  });
+
+  it("returns the lead and the body of a multi-paragraph answer", async () => {
+    // ARRANGE
+    const question = await seedQuestion({
+      answer:
+        "The lead.\n\nThe body.\n\n```js\nconst a = 1;\n\nconst b = 2;\n```",
+    });
+
+    // ACT
+    const response = await request(app).get(`/api/questions/${question.id}`);
+
+    // ASSERT
+    expect(response.body.data.lead).toBe("The lead.");
+    expect(response.body.data.body).toBe(
+      "The body.\n\n```js\nconst a = 1;\n\nconst b = 2;\n```",
+    );
+  });
+
+  it("returns an empty body for a single-paragraph answer", async () => {
+    // ARRANGE
+    const question = await seedQuestion({ answer: "Just one paragraph." });
+
+    // ACT
+    const response = await request(app).get(`/api/questions/${question.id}`);
+
+    // ASSERT
+    expect(response.body.data.lead).toBe("Just one paragraph.");
+    expect(response.body.data.body).toBe("");
+  });
+
+  it("returns every difficulty in lowercase", async () => {
+    // ARRANGE
+    const easy = await seedQuestion({ difficulty: "easy" });
+    const hard = await seedQuestion({ difficulty: "hard" });
+
+    // ACT
+    const easyResponse = await request(app).get(`/api/questions/${easy.id}`);
+    const hardResponse = await request(app).get(`/api/questions/${hard.id}`);
+
+    // ASSERT
+    expect(easyResponse.body.data.difficulty).toBe("easy");
+    expect(hardResponse.body.data.difficulty).toBe("hard");
   });
 
   it("returns 404 when the question does not exist", async () => {

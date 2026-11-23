@@ -10,7 +10,7 @@ afterAll(() => prisma.$disconnect());
 const validBody = {
   title: "What is a closure?",
   answer: "A function that **remembers** its scope.",
-  difficulty: "MEDIUM",
+  difficulty: "medium",
   tags: ["JavaScript", " javascript", "C++"],
 };
 
@@ -27,13 +27,51 @@ describe("POST /api/questions", () => {
     expect(response.body.success).toBe(true);
     expect(response.body.data).toMatchObject({
       title: "What is a closure?",
-      difficulty: "MEDIUM",
+      difficulty: "medium",
     });
     expect(slugsOf(response.body.data.tags)).toEqual([
       "c-plus-plus",
       "javascript",
     ]);
     expect(await prisma.question.count()).toBe(1);
+  });
+
+  it("returns the lead and the body and stores the database difficulty", async () => {
+    // ACT
+    const response = await request(app)
+      .post("/api/questions")
+      .set("x-api-key", API_KEY)
+      .send({
+        ...validBody,
+        answer: "Lead paragraph.\n\nBody paragraph.",
+        difficulty: "hard",
+      });
+
+    // ASSERT
+    expect(response.status).toBe(201);
+    expect(response.body.data).toMatchObject({
+      answer: "Lead paragraph.\n\nBody paragraph.",
+      lead: "Lead paragraph.",
+      body: "Body paragraph.",
+      difficulty: "hard",
+    });
+    const stored = await prisma.question.findUniqueOrThrow({
+      where: { id: response.body.data.id },
+    });
+    expect(stored.difficulty).toBe("HARD");
+  });
+
+  it("returns 400 for an uppercase difficulty and stores nothing", async () => {
+    // ACT
+    const response = await request(app)
+      .post("/api/questions")
+      .set("x-api-key", API_KEY)
+      .send({ ...validBody, difficulty: "MEDIUM" });
+
+    // ASSERT
+    expect(response.status).toBe(400);
+    expect(response.body.error.details[0].path).toBe("difficulty");
+    expect(await prisma.question.count()).toBe(0);
   });
 
   it("creates a question without tags when none are sent", async () => {
