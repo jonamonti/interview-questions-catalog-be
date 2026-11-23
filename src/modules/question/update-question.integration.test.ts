@@ -19,7 +19,7 @@ describe("PATCH /api/questions/:id", () => {
     const question = await seedQuestion({
       title: "Old title",
       answer: "Old answer",
-      difficulty: "EASY",
+      difficulty: "easy",
       tags: ["javascript"],
     });
 
@@ -31,9 +31,47 @@ describe("PATCH /api/questions/:id", () => {
     expect(response.body.data).toMatchObject({
       title: "New title",
       answer: "Old answer",
-      difficulty: "EASY",
+      difficulty: "easy",
     });
     expect(slugsOf(response.body.data.tags)).toEqual(["javascript"]);
+  });
+
+  it("changes the difficulty and recomputes the lead and the body", async () => {
+    // ARRANGE
+    const question = await seedQuestion({ difficulty: "easy" });
+
+    // ACT
+    const response = await patch(question.id, {
+      difficulty: "hard",
+      answer: "New lead.\n\nNew body.",
+    });
+
+    // ASSERT
+    expect(response.status).toBe(200);
+    expect(response.body.data).toMatchObject({
+      difficulty: "hard",
+      lead: "New lead.",
+      body: "New body.",
+    });
+    const stored = await prisma.question.findUniqueOrThrow({
+      where: { id: question.id },
+    });
+    expect(stored.difficulty).toBe("HARD");
+  });
+
+  it("returns 400 for an uppercase difficulty and changes nothing", async () => {
+    // ARRANGE
+    const question = await seedQuestion({ difficulty: "easy" });
+
+    // ACT
+    const response = await patch(question.id, { difficulty: "HARD" });
+
+    // ASSERT
+    expect(response.status).toBe(400);
+    const stored = await prisma.question.findUniqueOrThrow({
+      where: { id: question.id },
+    });
+    expect(stored.difficulty).toBe("EASY");
   });
 
   it("replaces the tags when tags are sent", async () => {

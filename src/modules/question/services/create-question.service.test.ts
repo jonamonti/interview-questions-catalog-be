@@ -14,7 +14,7 @@ jest.mock("../repositories/question-write.repository", () => ({
 const input = {
   title: "T",
   answer: "A",
-  difficulty: "EASY" as const,
+  difficulty: "easy" as const,
   tags: [],
 };
 

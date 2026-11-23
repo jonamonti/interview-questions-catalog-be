@@ -27,7 +27,7 @@ describe("createQuestion", () => {
     const input = {
       title: "T",
       answer: "A",
-      difficulty: "EASY" as const,
+      difficulty: "easy" as const,
       tags: ["c++", "javascript"],
     };
 
@@ -57,7 +57,7 @@ describe("createQuestion", () => {
 
     // ACT
     await createQuestion(
-      { title: "T", answer: "A", difficulty: "EASY", tags: [] },
+      { title: "T", answer: "A", difficulty: "easy", tags: [] },
       tx as never,
     );
 
@@ -65,6 +65,27 @@ describe("createQuestion", () => {
     expect(tx.question.create).toHaveBeenCalledTimes(1);
     expect(prisma.question.create).not.toHaveBeenCalled();
   });
+
+  it.each([
+    ["easy", "EASY"],
+    ["medium", "MEDIUM"],
+    ["hard", "HARD"],
+  ] as const)(
+    "stores the API difficulty %j as the database value %j",
+    async (apiValue, dbValue) => {
+      // ACT
+      await createQuestion({
+        title: "T",
+        answer: "A",
+        difficulty: apiValue,
+        tags: [],
+      });
+
+      // ASSERT
+      const { data } = jest.mocked(prisma.question.create).mock.calls[0][0];
+      expect(data.difficulty).toBe(dbValue);
+    },
+  );
 });
 
 describe("updateQuestion", () => {
@@ -78,6 +99,24 @@ describe("updateQuestion", () => {
     expect(where).toEqual({ id: 3 });
     expect(data).toMatchObject({ title: "New" });
     expect(data).not.toHaveProperty("questionTags");
+  });
+
+  it("stores a new difficulty as the database value", async () => {
+    // ACT
+    await updateQuestion(3, { difficulty: "hard" });
+
+    // ASSERT
+    const { data } = jest.mocked(prisma.question.update).mock.calls[0][0];
+    expect(data.difficulty).toBe("HARD");
+  });
+
+  it("leaves the difficulty alone when none is provided", async () => {
+    // ACT
+    await updateQuestion(3, { title: "New" });
+
+    // ASSERT
+    const { data } = jest.mocked(prisma.question.update).mock.calls[0][0];
+    expect(data.difficulty).toBeUndefined();
   });
 
   it("replaces the tag links when tags are provided", async () => {

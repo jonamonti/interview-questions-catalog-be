@@ -59,7 +59,10 @@ Prisma generates its client into `src/generated/prisma` on `npm install`
 The schema lives in `prisma/schema.prisma`:
 
 - `Question`: title, Markdown answer, `Difficulty` (`EASY` | `MEDIUM` | `HARD`)
-  and timestamps
+  and timestamps. The API speaks lowercase (`easy` | `medium` | `hard`) in
+  requests and responses; the conversion happens at the API boundary, so the
+  database enum never changes. Responses also carry `lead` (the first
+  paragraph of the answer) and `body` (the rest) next to the full `answer`
 - `Tag`: unique `name` and unique `slug`
 - `QuestionTag`: explicit join table between questions and tags. Its primary
   key is `(questionId, tagId)`, it has an index on `tagId` for tag filtering,

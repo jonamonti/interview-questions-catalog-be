@@ -1,5 +1,6 @@
 import { prisma } from "../../../db";
 import type { Prisma } from "../../../generated/prisma/client";
+import toDbDifficulty from "../../../utils/to-db-difficulty";
 import toSlug from "../../../utils/to-slug";
 import { CreateQuestionRequest } from "../schemas/create-question.schema";
 import { UpdateQuestionRequest } from "../schemas/update-question.schema";
@@ -32,7 +33,7 @@ export const createQuestion = (
     data: {
       title,
       answer,
-      difficulty,
+      difficulty: toDbDifficulty(difficulty),
       questionTags: {
         create: tags.map(tagToLink),
       },
@@ -50,7 +51,7 @@ export const updateQuestion = (
     data: {
       title,
       answer,
-      difficulty,
+      difficulty: difficulty && toDbDifficulty(difficulty),
       ...(tags && {
         questionTags: { deleteMany: {}, create: tags.map(tagToLink) },
       }),

@@ -20,6 +20,13 @@ describe("updateQuestionSchema", () => {
     ).toEqual(["react"]);
   });
 
+  it("accepts a lowercase difficulty", () => {
+    // ACT & ASSERT
+    expect(updateQuestionSchema.parse({ difficulty: "hard" })).toEqual({
+      difficulty: "hard",
+    });
+  });
+
   it("rejects an empty body", () => {
     // ACT
     const result = updateQuestionSchema.safeParse({});
@@ -31,7 +38,8 @@ describe("updateQuestionSchema", () => {
 
   it.each([
     ["an unknown key", { foo: 1 }],
-    ["an invalid difficulty", { difficulty: "IMPOSSIBLE" }],
+    ["an invalid difficulty", { difficulty: "impossible" }],
+    ["an uppercase difficulty", { difficulty: "HARD" }],
     ["an empty title", { title: "" }],
     [
       "more than 10 tags",

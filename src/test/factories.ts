@@ -8,7 +8,7 @@ export const seedQuestion = (overrides: Partial<CreateQuestionRequest> = {}) =>
   createQuestion({
     title: "What is a closure?",
     answer: "A function that remembers its scope.",
-    difficulty: "MEDIUM",
+    difficulty: "medium",
     tags: [],
     ...overrides,
   });
@@ -39,7 +39,9 @@ export const buildFormattedQuestion = () => ({
   id: 1,
   title: "What is a closure?",
   answer: "A function that remembers its scope.",
-  difficulty: "MEDIUM" as const,
+  lead: "A function that remembers its scope.",
+  body: "",
+  difficulty: "medium" as const,
   tags: [{ id: 5, name: "javascript", slug: "javascript" }],
   createdAt: "2026-11-01T12:00:00.000Z",
   updatedAt: "2026-11-02T12:00:00.000Z",

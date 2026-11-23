@@ -1,6 +1,6 @@
 import { createQuestionSchema } from "./create-question.schema";
 
-const valid = { title: "Title", answer: "Answer", difficulty: "EASY" };
+const valid = { title: "Title", answer: "Answer", difficulty: "easy" };
 
 describe("createQuestionSchema", () => {
   it("defaults tags to an empty list", () => {
@@ -31,8 +31,16 @@ describe("createQuestionSchema", () => {
     expect(result.tags).toEqual(["javascript", "c++"]);
   });
 
+  it.each(["easy", "medium", "hard"])("accepts the difficulty %j", (value) => {
+    // ACT & ASSERT
+    expect(
+      createQuestionSchema.parse({ ...valid, difficulty: value }).difficulty,
+    ).toBe(value);
+  });
+
   it.each([
     ["an empty title", { title: "   " }],
+    ["an uppercase difficulty", { difficulty: "EASY" }],
     ["a title over 200 characters", { title: "a".repeat(201) }],
     ["an empty answer", { answer: "" }],
     ["an invalid difficulty", { difficulty: "IMPOSSIBLE" }],
