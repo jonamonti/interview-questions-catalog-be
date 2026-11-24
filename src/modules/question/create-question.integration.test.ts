@@ -43,16 +43,17 @@ describe("POST /api/questions", () => {
       .set("x-api-key", API_KEY)
       .send({
         ...validBody,
-        answer: "Lead paragraph.\n\nBody paragraph.",
+        answer: "Lead **paragraph**.\n\nBody paragraph.",
         difficulty: "hard",
       });
 
     // ASSERT
     expect(response.status).toBe(201);
     expect(response.body.data).toMatchObject({
-      answer: "Lead paragraph.\n\nBody paragraph.",
-      lead: "Lead paragraph.",
+      answer: "Lead **paragraph**.\n\nBody paragraph.",
+      lead: "Lead **paragraph**.",
       body: "Body paragraph.",
+      preview: "Lead paragraph.",
       difficulty: "hard",
     });
     const stored = await prisma.question.findUniqueOrThrow({

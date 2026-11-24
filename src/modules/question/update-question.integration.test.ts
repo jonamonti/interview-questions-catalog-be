@@ -43,15 +43,16 @@ describe("PATCH /api/questions/:id", () => {
     // ACT
     const response = await patch(question.id, {
       difficulty: "hard",
-      answer: "New lead.\n\nNew body.",
+      answer: "New `lead`.\n\nNew body.",
     });
 
     // ASSERT
     expect(response.status).toBe(200);
     expect(response.body.data).toMatchObject({
       difficulty: "hard",
-      lead: "New lead.",
+      lead: "New `lead`.",
       body: "New body.",
+      preview: "New lead.",
     });
     const stored = await prisma.question.findUniqueOrThrow({
       where: { id: question.id },

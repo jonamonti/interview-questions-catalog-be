@@ -26,6 +26,10 @@ export const questionResponseSchema = z
       description:
         "Markdown. The rest of the answer after the lead, empty when the answer is a single paragraph",
     }),
+    preview: z.string().meta({
+      description:
+        "Plain text of the lead for list cards: no Markdown, no code blocks, one line of text, at most about 200 characters (cut at a word, with an ellipsis)",
+    }),
     difficulty: z.enum(apiDifficulty),
     tags: z.array(tagResponseSchema),
     createdAt: z.iso.datetime(),
@@ -40,6 +44,7 @@ export const questionResponseSchema = z
         "A function that **remembers** the scope it was created in.\n\nIt is created every time a function is created.",
       lead: "A function that **remembers** the scope it was created in.",
       body: "It is created every time a function is created.",
+      preview: "A function that remembers the scope it was created in.",
       difficulty: "medium",
       tags: [{ id: 1, name: "javascript", slug: "javascript" }],
       createdAt: "2026-11-01T12:00:00.000Z",

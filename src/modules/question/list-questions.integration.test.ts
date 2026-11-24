@@ -37,6 +37,21 @@ describe("GET /api/questions", () => {
     expect(response.body.data.list[1].tags[0].slug).toBe("javascript");
   });
 
+  it("includes the plain-text preview of every question", async () => {
+    // ARRANGE
+    await seedQuestion({ title: "A", answer: "First **bold** one.\n\nMore." });
+    await seedQuestion({ title: "B", answer: "```js\nconst x = 1;\n```" });
+
+    // ACT
+    const response = await request(app).get("/api/questions");
+
+    // ASSERT
+    const previews = response.body.data.list.map(
+      (question: { preview: string }) => question.preview,
+    );
+    expect(previews).toEqual(["const x = 1;", "First bold one."]);
+  });
+
   it("paginates and reports the totals", async () => {
     // ARRANGE
     for (const title of ["Q1", "Q2", "Q3", "Q4", "Q5"]) {

@@ -41,6 +41,7 @@ export const buildFormattedQuestion = () => ({
   answer: "A function that remembers its scope.",
   lead: "A function that remembers its scope.",
   body: "",
+  preview: "A function that remembers its scope.",
   difficulty: "medium" as const,
   tags: [{ id: 5, name: "javascript", slug: "javascript" }],
   createdAt: "2026-11-01T12:00:00.000Z",
