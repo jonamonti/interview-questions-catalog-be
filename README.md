@@ -62,7 +62,9 @@ The schema lives in `prisma/schema.prisma`:
   and timestamps. The API speaks lowercase (`easy` | `medium` | `hard`) in
   requests and responses; the conversion happens at the API boundary, so the
   database enum never changes. Responses also carry `lead` (the first
-  paragraph of the answer) and `body` (the rest) next to the full `answer`
+  paragraph of the answer) and `body` (the rest) next to the full `answer`, plus
+  `preview`: the plain text of the lead for list cards (no Markdown, fenced
+  code blocks dropped, whitespace collapsed, about 200 characters at most)
 - `Tag`: unique `name` and unique `slug`
 - `QuestionTag`: explicit join table between questions and tags. Its primary
   key is `(questionId, tagId)`, it has an index on `tagId` for tag filtering,

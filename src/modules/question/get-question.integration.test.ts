@@ -47,6 +47,23 @@ describe("GET /api/questions/:id", () => {
     );
   });
 
+  it("returns a plain-text preview without Markdown or code blocks", async () => {
+    // ARRANGE
+    const question = await seedQuestion({
+      answer:
+        "A **closure** keeps [its scope](https://x.dev) alive.\n```js\nconst a = 1;\n```\nSecond line.\n\nBody text.",
+    });
+
+    // ACT
+    const response = await request(app).get(`/api/questions/${question.id}`);
+
+    // ASSERT
+    expect(response.body.data.preview).toBe(
+      "A closure keeps its scope alive. Second line.",
+    );
+    expect(response.body.data.answer).toContain("**closure**");
+  });
+
   it("returns an empty body for a single-paragraph answer", async () => {
     // ARRANGE
     const question = await seedQuestion({ answer: "Just one paragraph." });

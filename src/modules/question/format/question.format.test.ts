@@ -41,6 +41,18 @@ describe("formatQuestion", () => {
     });
   });
 
+  it("adds a plain-text preview made from the lead only", () => {
+    // ARRANGE
+    const answer =
+      "Use `useEffect` for **side effects**.\n\nA much longer body.";
+
+    // ACT
+    const result = formatQuestion(buildQuestionRow({ answer }));
+
+    // ASSERT
+    expect(result.preview).toBe("Use useEffect for side effects.");
+  });
+
   it("returns an empty tags list for a question without tags", () => {
     // ACT & ASSERT
     expect(formatQuestion(buildQuestionRow({ questionTags: [] })).tags).toEqual(

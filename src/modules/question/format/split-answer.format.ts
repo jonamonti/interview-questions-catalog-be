@@ -1,4 +1,4 @@
-const FENCE_LINE = /^\s*(```|~~~)/;
+export const FENCE_LINE = /^\s*(```|~~~)/;
 const LEADING_BLANK_LINES = /^\s*\n/;
 
 export type AnswerParts = {
