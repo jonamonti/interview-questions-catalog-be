@@ -10,6 +10,33 @@ import { ZodError } from "zod";
 const isMalformedJson = (error: unknown) =>
   error instanceof SyntaxError && "body" in error;
 
+const bodyParserErrors = {
+  "entity.too.large": {
+    status: httpStatus.PAYLOAD_TOO_LARGE,
+    code: errorCode.PAYLOAD_TOO_LARGE,
+    message: "Request body is too large",
+  },
+  "encoding.unsupported": {
+    status: httpStatus.UNSUPPORTED_MEDIA_TYPE,
+    code: errorCode.UNSUPPORTED_MEDIA_TYPE,
+    message: "Unsupported content encoding",
+  },
+  "charset.unsupported": {
+    status: httpStatus.UNSUPPORTED_MEDIA_TYPE,
+    code: errorCode.UNSUPPORTED_MEDIA_TYPE,
+    message: "Unsupported charset",
+  },
+};
+
+const getBodyParserError = (error: unknown) => {
+  if (typeof error !== "object" || error === null || !("type" in error))
+    return undefined;
+  const type = error.type;
+  return typeof type === "string" && type in bodyParserErrors
+    ? bodyParserErrors[type as keyof typeof bodyParserErrors]
+    : undefined;
+};
+
 const formatZodIssues = (error: ZodError) =>
   error.issues.flatMap((issue) =>
     issue.code === "unrecognized_keys"
@@ -90,6 +117,17 @@ const errorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
       error: { code: errorCode.VALIDATION_ERROR },
     };
     res.status(httpStatus.BAD_REQUEST).json(body);
+    return;
+  }
+
+  const bodyError = getBodyParserError(error);
+  if (bodyError) {
+    const body: ErrorResponse = {
+      success: false,
+      message: bodyError.message,
+      error: { code: bodyError.code },
+    };
+    res.status(bodyError.status).json(body);
     return;
   }
 

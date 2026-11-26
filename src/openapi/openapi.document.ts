@@ -27,6 +27,12 @@ const errorResponse = (description: string) => ({
 const unauthorized = errorResponse("Missing or wrong API key");
 const validationError = errorResponse("Invalid input");
 const serverError = errorResponse("Unexpected server error");
+const payloadTooLarge = errorResponse(
+  "Request body over 64 kB (PAYLOAD_TOO_LARGE)",
+);
+const unsupportedMediaType = errorResponse(
+  "Compressed or unsupported request body (UNSUPPORTED_MEDIA_TYPE)",
+);
 
 export const openApiDocument = createDocument({
   openapi: "3.1.0",
@@ -94,6 +100,8 @@ export const openApiDocument = createDocument({
           "400": validationError,
           "401": unauthorized,
           "409": errorResponse("A tag was created at the same time"),
+          "413": payloadTooLarge,
+          "415": unsupportedMediaType,
           "500": serverError,
         },
       },
@@ -138,6 +146,8 @@ export const openApiDocument = createDocument({
           "401": unauthorized,
           "404": errorResponse("Question not found"),
           "409": errorResponse("A tag was created at the same time"),
+          "413": payloadTooLarge,
+          "415": unsupportedMediaType,
           "500": serverError,
         },
       },

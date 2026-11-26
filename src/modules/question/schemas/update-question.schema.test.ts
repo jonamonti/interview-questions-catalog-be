@@ -50,3 +50,15 @@ describe("updateQuestionSchema", () => {
     expect(updateQuestionSchema.safeParse(input).success).toBe(false);
   });
 });
+
+describe("updateQuestionSchema - answer length", () => {
+  it("accepts 20,000 characters and rejects 20,001", () => {
+    // ACT & ASSERT
+    expect(
+      updateQuestionSchema.safeParse({ answer: "a".repeat(20000) }).success,
+    ).toBe(true);
+    expect(
+      updateQuestionSchema.safeParse({ answer: "a".repeat(20001) }).success,
+    ).toBe(false);
+  });
+});
