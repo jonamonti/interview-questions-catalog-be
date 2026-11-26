@@ -27,6 +27,9 @@ const errorResponse = (description: string) => ({
 const unauthorized = errorResponse("Missing or wrong API key");
 const validationError = errorResponse("Invalid input");
 const serverError = errorResponse("Unexpected server error");
+const tooManyRequests = errorResponse(
+  "Rate limit reached (RATE_LIMITED); wait for the seconds in the Retry-After header",
+);
 const payloadTooLarge = errorResponse(
   "Request body over 64 kB (PAYLOAD_TOO_LARGE)",
 );
@@ -40,7 +43,7 @@ export const openApiDocument = createDocument({
     title: "Interview Questions Catalog API",
     version: "1.0.0",
     description:
-      "Public read endpoints. Write endpoints need the `x-api-key` header.",
+      "Public read endpoints. Write endpoints need the `x-api-key` header. Requests are rate limited per client address; over the limit the API answers 429 with a `Retry-After` header.",
   },
   components: {
     securitySchemes: {
@@ -59,6 +62,7 @@ export const openApiDocument = createDocument({
               successResponseSchema("HealthResponse", healthResponseSchema),
             ),
           },
+          "429": tooManyRequests,
           "503": errorResponse("Database is unreachable"),
         },
       },
@@ -79,6 +83,7 @@ export const openApiDocument = createDocument({
             ),
           },
           "400": validationError,
+          "429": tooManyRequests,
           "500": serverError,
         },
       },
@@ -102,6 +107,7 @@ export const openApiDocument = createDocument({
           "409": errorResponse("A tag was created at the same time"),
           "413": payloadTooLarge,
           "415": unsupportedMediaType,
+          "429": tooManyRequests,
           "500": serverError,
         },
       },
@@ -123,6 +129,7 @@ export const openApiDocument = createDocument({
           },
           "400": validationError,
           "404": errorResponse("Question not found"),
+          "429": tooManyRequests,
           "500": serverError,
         },
       },
@@ -148,6 +155,7 @@ export const openApiDocument = createDocument({
           "409": errorResponse("A tag was created at the same time"),
           "413": payloadTooLarge,
           "415": unsupportedMediaType,
+          "429": tooManyRequests,
           "500": serverError,
         },
       },
@@ -161,6 +169,7 @@ export const openApiDocument = createDocument({
           "400": validationError,
           "401": unauthorized,
           "404": errorResponse("Question not found"),
+          "429": tooManyRequests,
           "500": serverError,
         },
       },
@@ -177,6 +186,7 @@ export const openApiDocument = createDocument({
               successResponseSchema("ListTagsResponse", tagListResponseSchema),
             ),
           },
+          "429": tooManyRequests,
           "500": serverError,
         },
       },

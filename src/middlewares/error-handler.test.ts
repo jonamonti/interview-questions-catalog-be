@@ -197,3 +197,19 @@ describe("errorHandler - body parser errors", () => {
     expect(res.status).toHaveBeenCalledWith(500);
   });
 });
+
+describe("errorHandler - rate limit", () => {
+  it("answers 429 with the RATE_LIMITED code", () => {
+    // ACT
+    const res = handle(
+      new AppError(429, "RATE_LIMITED", "Too many requests, try again later"),
+    );
+
+    // ASSERT
+    expect(res.status).toHaveBeenCalledWith(429);
+    expect(res.json.mock.calls[0][0]).toMatchObject({
+      success: false,
+      error: { code: "RATE_LIMITED" },
+    });
+  });
+});
