@@ -201,3 +201,23 @@ and the document never contains the API key.
   at most 20,000 characters.
 - `helmet` sets the security headers on every response and removes
   `X-Powered-By`. The default policy works with the Swagger UI.
+
+## Rate limiting
+
+Each client address has three counters per window (`RATE_LIMIT_WINDOW_MS`,
+60 seconds by default). Over a limit, the API answers `429 RATE_LIMITED` in the
+standard envelope with a `Retry-After` header, before it reads the request body.
+
+| Limit                      | Counts                                | Default |
+| -------------------------- | ------------------------------------- | ------- |
+| `RATE_LIMIT_MAX`           | every request to the API              | 120     |
+| `RATE_LIMIT_WRITE_MAX`     | `POST`, `PATCH` and `DELETE` requests | 20      |
+| `RATE_LIMIT_AUTH_FAIL_MAX` | write requests answered with 401      | 10      |
+
+The counters live in memory, which is enough for one instance. With several
+instances, give the limiters a shared `store` (for example Redis).
+
+Behind a reverse proxy, set `TRUST_PROXY` to the number of proxies in front of
+the API (0 when clients connect directly). Without it, every visitor would
+share the proxy's address, and with too high a number a client could fake its
+address with `X-Forwarded-For`. Check it on the real host (INT-52).

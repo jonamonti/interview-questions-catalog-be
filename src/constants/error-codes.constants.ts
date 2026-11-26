@@ -7,6 +7,7 @@ export const errorCode = {
   INTERNAL_ERROR: "INTERNAL_ERROR",
   PAYLOAD_TOO_LARGE: "PAYLOAD_TOO_LARGE",
   UNSUPPORTED_MEDIA_TYPE: "UNSUPPORTED_MEDIA_TYPE",
+  RATE_LIMITED: "RATE_LIMITED",
 } as const;
 
 export type ErrorCode = (typeof errorCode)[keyof typeof errorCode];
