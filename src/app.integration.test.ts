@@ -63,3 +63,34 @@ describe("app - CORS", () => {
     expect(response.headers["access-control-allow-origin"]).toBeUndefined();
   });
 });
+
+describe("app - security headers", () => {
+  it("sets security headers and hides the framework", async () => {
+    // ACT
+    const response = await request(app).get("/api/health");
+
+    // ASSERT
+    expect(response.headers["x-powered-by"]).toBeUndefined();
+    expect(response.headers["x-content-type-options"]).toBe("nosniff");
+    expect(response.headers["strict-transport-security"]).toBeDefined();
+    expect(response.headers["referrer-policy"]).toBe("no-referrer");
+  });
+
+  it("sets the headers on error responses too", async () => {
+    // ACT
+    const response = await request(app).get("/api/nope");
+
+    // ASSERT
+    expect(response.status).toBe(404);
+    expect(response.headers["x-content-type-options"]).toBe("nosniff");
+  });
+
+  it("still serves the Swagger UI page", async () => {
+    // ACT
+    const response = await request(app).get("/api/docs/");
+
+    // ASSERT
+    expect(response.status).toBe(200);
+    expect(response.text).toContain("Swagger UI");
+  });
+});

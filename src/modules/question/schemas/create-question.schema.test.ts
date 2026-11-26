@@ -59,3 +59,28 @@ describe("createQuestionSchema", () => {
     ).toBe(false);
   });
 });
+
+describe("createQuestionSchema - answer length", () => {
+  it("accepts an answer of exactly 20,000 characters", () => {
+    // ACT
+    const result = createQuestionSchema.safeParse({
+      ...valid,
+      answer: "a".repeat(20000),
+    });
+
+    // ASSERT
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects an answer of 20,001 characters", () => {
+    // ACT
+    const result = createQuestionSchema.safeParse({
+      ...valid,
+      answer: "a".repeat(20001),
+    });
+
+    // ASSERT
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].path).toEqual(["answer"]);
+  });
+});

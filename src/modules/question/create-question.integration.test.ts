@@ -1,3 +1,4 @@
+import { gzipSync } from "node:zlib";
 import request from "supertest";
 import app from "../../app";
 import { prisma } from "../../db";
@@ -190,5 +191,56 @@ describe("POST /api/questions", () => {
     // ASSERT
     expect(response.status).toBe(400);
     expect(response.body.message).toBe("Malformed JSON body");
+  });
+});
+
+describe("POST /api/questions - request limits", () => {
+  it("returns 400 with the field path for an answer over the maximum", async () => {
+    // ACT
+    const response = await request(app)
+      .post("/api/questions")
+      .set("x-api-key", API_KEY)
+      .send({ ...validBody, answer: "a".repeat(20001) });
+
+    // ASSERT
+    expect(response.status).toBe(400);
+    expect(response.body.error.code).toBe("VALIDATION_ERROR");
+    expect(response.body.error.details[0].path).toBe("answer");
+    expect(await prisma.question.count()).toBe(0);
+  });
+
+  it("returns 413 in the envelope for a body over the limit", async () => {
+    // ACT
+    const response = await request(app)
+      .post("/api/questions")
+      .set("x-api-key", API_KEY)
+      .send({ ...validBody, answer: "a".repeat(70000) });
+
+    // ASSERT
+    expect(response.status).toBe(413);
+    expect(response.body).toMatchObject({
+      success: false,
+      error: { code: "PAYLOAD_TOO_LARGE" },
+    });
+    expect(response.body.error.details).toBeUndefined();
+    expect(await prisma.question.count()).toBe(0);
+  });
+
+  it("returns 415 for a compressed body", async () => {
+    // ARRANGE
+    const compressed = gzipSync(JSON.stringify(validBody));
+
+    // ACT
+    const response = await request(app)
+      .post("/api/questions")
+      .set("x-api-key", API_KEY)
+      .set("Content-Type", "application/json")
+      .set("Content-Encoding", "gzip")
+      .send(compressed);
+
+    // ASSERT
+    expect(response.status).toBe(415);
+    expect(response.body.error.code).toBe("UNSUPPORTED_MEDIA_TYPE");
+    expect(await prisma.question.count()).toBe(0);
   });
 });

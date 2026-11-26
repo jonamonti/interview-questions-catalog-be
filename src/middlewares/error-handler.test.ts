@@ -167,3 +167,33 @@ describe("errorHandler - unexpected error handling", () => {
     expect(res.json.mock.calls[0][0].error.details).toBeUndefined();
   });
 });
+
+describe("errorHandler - body parser errors", () => {
+  const bodyParserError = (type: string) =>
+    Object.assign(new Error("body-parser failed"), { type });
+
+  it.each([
+    ["entity.too.large", 413, "PAYLOAD_TOO_LARGE"],
+    ["encoding.unsupported", 415, "UNSUPPORTED_MEDIA_TYPE"],
+    ["charset.unsupported", 415, "UNSUPPORTED_MEDIA_TYPE"],
+  ])("maps %s to %i with the %s code", (type, status, code) => {
+    // ACT
+    const res = handle(bodyParserError(type));
+
+    // ASSERT
+    expect(res.status).toHaveBeenCalledWith(status);
+    expect(res.json.mock.calls[0][0]).toMatchObject({
+      success: false,
+      error: { code },
+    });
+    expect(res.json.mock.calls[0][0].error.details).toBeUndefined();
+  });
+
+  it("treats an unknown error type as a server error", () => {
+    // ACT
+    const res = handle(bodyParserError("request.aborted"));
+
+    // ASSERT
+    expect(res.status).toHaveBeenCalledWith(500);
+  });
+});

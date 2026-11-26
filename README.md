@@ -189,3 +189,15 @@ validate requests, so it cannot drift from the code.
 In Swagger UI, click **Authorize** and paste your `API_KEY` to try the write
 endpoints. Endpoint details (parameters, bodies, responses, errors) live only
 in the OpenAPI document: `src/openapi/openapi.document.ts`.
+
+The docs stay public in production on purpose: the API is a public read API,
+and the document never contains the API key.
+
+## Request limits and security headers
+
+- Request bodies are limited to 64 kB and must not be compressed
+  (`express.json({ limit: "64kb", inflate: false })`); otherwise the API answers
+  `413 PAYLOAD_TOO_LARGE` or `415 UNSUPPORTED_MEDIA_TYPE`. An `answer` can have
+  at most 20,000 characters.
+- `helmet` sets the security headers on every response and removes
+  `X-Powered-By`. The default policy works with the Swagger UI.
